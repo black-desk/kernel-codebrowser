@@ -79,15 +79,6 @@ jobs:
           mkdir -p kernel-source
           mkdir -p kernel-build
 
-      - name: Cache kernel source
-        id: cache-source
-        uses: actions/cache@v4
-        with:
-          path: kernel-source/
-          key: kernel-source-${{ steps.params.outputs.kernel_version }}
-          restore-keys: |
-            kernel-source-${{ steps.params.outputs.kernel_version }}
-
       - name: Cache kernel build
         id: cache-build
         uses: actions/cache@v4
@@ -99,7 +90,6 @@ jobs:
             kernel-build-${{ steps.params.outputs.kernel_version }}-
 
       - name: Clone Linux kernel
-        if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
           cd kernel-source
           git clone --depth 1 --branch ${{ steps.params.outputs.kernel_version }} ${{ env.KERNEL_REPO }} linux
@@ -119,7 +109,6 @@ jobs:
           echo "Kernel commit: ${KERNEL_COMMIT}"
 
       - name: Build kernel with compile_commands.json
-        if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
           docker run --rm \
             -v $(pwd)/kernel-source:/mnt/source:ro \
@@ -194,8 +183,8 @@ jobs:
               -i /mnt/source/linux \
               -b /mnt/build \
               -o /mnt/output \
-              -p "Linux Kernel" \
-              -v "${{ needs.build-kernel.outputs.kernel-version }} (${{ needs.build-kernel.outputs.kernel-commit }})"
+              -p "Linux" \
+              -v "${{ needs.build-kernel.outputs.kernel-version }}(${{ needs.build-kernel.outputs.kernel-commit }})"
 
       - name: Verify codebrowser output
         run: |
@@ -231,14 +220,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  cleanup:
-    needs: [build-kernel, generate-codebrowser]
-    runs-on: ubuntu-latest
-    if: always()
-
-    steps:
-      - name: Delete artifacts
-        uses: geekyeggo/delete-artifact@v4
-        with:
-          name: kernel-artifacts
