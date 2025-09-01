@@ -114,11 +114,17 @@ jobs:
           echo "Compile commands file size:"
           du -h kernel-workspace/linux/compile_commands.json
 
+      - name: Compress kernel artifacts
+        run: |
+          tar -czf kernel-workspace.tar.gz kernel-workspace/
+          echo "Compressed kernel workspace:"
+          ls -lh kernel-workspace.tar.gz
+
       - name: Upload kernel artifacts
         uses: actions/upload-artifact@v4
         with:
           name: kernel-artifacts
-          path: kernel-workspace/
+          path: kernel-workspace.tar.gz
           retention-days: 1
 
   generate-codebrowser:
@@ -133,6 +139,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: kernel-artifacts
+
+      - name: Extract kernel artifacts
+        run: |
+          tar -xzf kernel-workspace.tar.gz
+          rm kernel-workspace.tar.gz
+          echo "Extracted kernel workspace:"
+          ls -la kernel-workspace/linux/
 
       - name: Create output directory
         run: |
