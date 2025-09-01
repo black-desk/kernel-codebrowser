@@ -109,7 +109,7 @@ codebrowser_generator \
 # Generate index
 if command -v codebrowser_indexgenerator &> /dev/null; then
     echo "Generating index..."
-    codebrowser_indexgenerator "$INPUT_DIR"
+    codebrowser_indexgenerator "$OUTPUT_DIR" -p "$PROJECT_NAME:$INPUT_DIR:$PROJECT_VERSION" -d data
 else
     echo "Warning: codebrowser_indexgenerator not found. Index will not be generated."
 fi
