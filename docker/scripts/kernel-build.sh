@@ -66,11 +66,6 @@ if [[ ! -f "$SOURCE_DIR/Makefile" ]]; then
     exit 1
 fi
 
-# Create output directory if specified
-if [[ -n "$OUTPUT_DIR" ]]; then
-    mkdir -p "$OUTPUT_DIR"
-fi
-
 # Change to source directory
 cd "$SOURCE_DIR"
 
