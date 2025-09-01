@@ -126,7 +126,6 @@ jobs:
           echo "Kernel commit: ${KERNEL_COMMIT}"
 
       - name: Build kernel with compile_commands.json
-        if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
           docker run --rm \
             -v $(pwd)/kernel-source:/mnt/source:ro \
