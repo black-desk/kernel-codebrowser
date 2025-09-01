@@ -104,7 +104,7 @@ codebrowser_generator \
     -a \
     -o "$FINAL_OUTPUT_DIR" \
     -b "$BUILD_DIR" \
-    -p "$PROJECT_NAME:$PROJECT_VERSION:$INPUT_DIR"
+    -p "$PROJECT_NAME:$INPUT_DIR:$PROJECT_VERSION"
 
 # Generate index
 if command -v codebrowser_indexgenerator &> /dev/null; then
