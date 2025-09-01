@@ -106,6 +106,13 @@ jobs:
           cd linux
           echo "Cloned Linux kernel ${{ steps.params.outputs.kernel_version }}"
           git log --oneline -1
+      - name: Update Linux kernel
+        if: steps.cache-source.outputs.cache-hit == 'true'
+        run: |
+          cd kernel-source/linux
+          git pull || true
+          echo "Updated Linux kernel ${{ steps.params.outputs.kernel_version }}"
+          git log --oneline -1
 
       - name: Get kernel information
         id: kernel-info
