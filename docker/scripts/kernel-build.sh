@@ -91,12 +91,6 @@ fi
 echo "Running olddefconfig with LLVM=1..."
 make -C "$SOURCE_DIR" O="$BUILD_DIR" LLVM=1 -j"$JOBS" olddefconfig
 
-# Enable compile_commands.json generation
-if [[ -f "$BUILD_DIR/.config" ]]; then
-    echo "Enabling compile_commands.json generation..."
-    "$SOURCE_DIR"/scripts/config --file "$BUILD_DIR/.config" --set-str COMPILE_TEST y 2>/dev/null || true
-fi
-
 # Generate compile_commands.json directly
 echo "Generating compile_commands.json..."
 make -C "$SOURCE_DIR" O="$BUILD_DIR" LLVM=1 -j"$JOBS" compile_commands.json
