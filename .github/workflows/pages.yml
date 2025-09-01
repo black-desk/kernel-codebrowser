@@ -194,12 +194,29 @@ jobs:
               -i /mnt/source/linux \
               -b /mnt/build \
               -o /mnt/output \
-              -p "Linux Kernel ${{ needs.build-kernel.outputs.kernel-version }} (${{ needs.build-kernel.outputs.kernel-commit }})"
+              -p "Linux Kernel" \
+              -v "${{ needs.build-kernel.outputs.kernel-version }} (${{ needs.build-kernel.outputs.kernel-commit }})"
 
       - name: Verify codebrowser output
         run: |
-          echo "Codebrowser output:"
+          echo "Codebrowser output structure:"
+          find codebrowser-output/ -type f | head -20
+          echo "Root directory contents:"
           ls -la codebrowser-output/
+          echo "Checking for index.html in root:"
+          if [[ -f codebrowser-output/index.html ]]; then
+            echo "✓ index.html found in root"
+          else
+            echo "✗ index.html not found in root - checking subdirectories:"
+            find codebrowser-output/ -name "index.html"
+          fi
+          echo "Checking for data directory and CSS files:"
+          if [[ -d codebrowser-output/data ]]; then
+            echo "Data directory exists:"
+            ls -la codebrowser-output/data/
+          else
+            echo "Warning: Data directory not found!"
+          fi
           echo "Total size:"
           du -sh codebrowser-output/
 
