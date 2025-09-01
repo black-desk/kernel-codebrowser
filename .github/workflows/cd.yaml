@@ -20,9 +20,9 @@ jobs:
   #   steps:
   #     - uses: black-desk/workflows/goreleaser@master
 
-  # TODO: Remove this job
-  place-holder:
+  # Placeholder job - will be replaced with actual deployment jobs as project develops
+  development-placeholder:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "Hello world!"
+          echo "Kernel Code Browser deployment jobs will be added here as the project develops"
