@@ -84,18 +84,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: kernel-source/
-          key: kernel-source-${{ steps.params.outputs.kernel_version }}-${{ hashFiles('.github/workflows/pages.yml') }}
+          key: kernel-source-${{ steps.params.outputs.kernel_version }}
           restore-keys: |
-            kernel-source-${{ steps.params.outputs.kernel_version }}-
+            kernel-source-${{ steps.params.outputs.kernel_version }}
 
       - name: Cache kernel build
         id: cache-build
         uses: actions/cache@v4
         with:
           path: kernel-build/
-          key: kernel-build-${{ steps.params.outputs.kernel_version }}-${{ steps.params.outputs.kernel_config }}-${{ steps.params.outputs.arch }}-${{ hashFiles('.github/workflows/pages.yml', 'docker/scripts/kernel-build.sh') }}
+          key: kernel-build-${{ steps.params.outputs.kernel_version }}-${{ steps.params.outputs.kernel_config }}-${{ steps.params.outputs.arch }}
           restore-keys: |
-            kernel-build-${{ steps.params.outputs.kernel_version }}-${{ steps.params.outputs.kernel_config }}-${{ steps.params.outputs.arch }}-
+            kernel-build-${{ steps.params.outputs.kernel_version }}-${{ steps.params.outputs.kernel_config }}-
             kernel-build-${{ steps.params.outputs.kernel_version }}-
 
       - name: Clone Linux kernel
