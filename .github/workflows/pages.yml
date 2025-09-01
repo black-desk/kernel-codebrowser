@@ -76,11 +76,32 @@ jobs:
 
       - name: Create workspace directories
         run: |
-          mkdir -p kernel-workspace
+          mkdir -p kernel-source
+          mkdir -p kernel-build
+
+      - name: Cache kernel source
+        id: cache-source
+        uses: actions/cache@v4
+        with:
+          path: kernel-source/
+          key: kernel-source-${{ steps.params.outputs.kernel_version }}-${{ hashFiles('.github/workflows/pages.yml') }}
+          restore-keys: |
+            kernel-source-${{ steps.params.outputs.kernel_version }}-
+
+      - name: Cache kernel build
+        id: cache-build
+        uses: actions/cache@v4
+        with:
+          path: kernel-build/
+          key: kernel-build-${{ steps.params.outputs.kernel_version }}-${{ steps.params.outputs.kernel_config }}-${{ steps.params.outputs.arch }}-${{ hashFiles('.github/workflows/pages.yml', 'docker/scripts/kernel-build.sh') }}
+          restore-keys: |
+            kernel-build-${{ steps.params.outputs.kernel_version }}-${{ steps.params.outputs.kernel_config }}-${{ steps.params.outputs.arch }}-
+            kernel-build-${{ steps.params.outputs.kernel_version }}-
 
       - name: Clone Linux kernel
+        if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
-          cd kernel-workspace
+          cd kernel-source
           git clone --depth 1 --branch ${{ steps.params.outputs.kernel_version }} ${{ env.KERNEL_REPO }} linux
           cd linux
           echo "Cloned Linux kernel ${{ steps.params.outputs.kernel_version }}"
@@ -89,7 +110,7 @@ jobs:
       - name: Get kernel information
         id: kernel-info
         run: |
-          cd kernel-workspace/linux
+          cd kernel-source/linux
           KERNEL_VERSION=$(make kernelversion)
           KERNEL_COMMIT=$(git rev-parse --short HEAD)
           echo "version=${KERNEL_VERSION}" >> $GITHUB_OUTPUT
@@ -98,21 +119,35 @@ jobs:
           echo "Kernel commit: ${KERNEL_COMMIT}"
 
       - name: Build kernel with compile_commands.json
+        if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
           docker run --rm \
-            -v $(pwd)/kernel-workspace:/mnt/workspace \
+            -v $(pwd)/kernel-source:/mnt/source:ro \
+            -v $(pwd)/kernel-build:/mnt/build \
             ${{ env.REGISTRY }}/${{ github.repository }}/kernel-build:latest \
             /mnt/scripts/kernel-build.sh \
-              -s /mnt/workspace/linux \
+              -s /mnt/source/linux \
+              -b /mnt/build \
               -c ${{ steps.params.outputs.kernel_config }} \
               -a ${{ steps.params.outputs.arch }}
 
       - name: Verify build artifacts
         run: |
           echo "Build artifacts:"
-          ls -la kernel-workspace/linux/
-          echo "Compile commands file size:"
-          du -h kernel-workspace/linux/compile_commands.json
+          ls -la kernel-build/
+          if [[ -f kernel-build/compile_commands.json ]]; then
+            echo "Compile commands file size:"
+            du -h kernel-build/compile_commands.json
+          else
+            echo "Warning: compile_commands.json not found, may be using cached version"
+          fi
+
+      - name: Compress kernel artifacts
+        run: |
+          tar -czf kernel-source.tar.gz kernel-source/
+          tar -czf kernel-build.tar.gz kernel-build/
+          echo "Compressed artifacts:"
+          ls -lh kernel-*.tar.gz
 
       - name: Compress kernel artifacts
         run: |
@@ -124,7 +159,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: kernel-artifacts
-          path: kernel-workspace.tar.gz
+          path: |
+            kernel-source.tar.gz
+            kernel-build.tar.gz
           retention-days: 1
 
   generate-codebrowser:
@@ -142,10 +179,11 @@ jobs:
 
       - name: Extract kernel artifacts
         run: |
-          tar -xzf kernel-workspace.tar.gz
-          rm kernel-workspace.tar.gz
-          echo "Extracted kernel workspace:"
-          ls -la kernel-workspace/linux/
+          tar -xzf kernel-source.tar.gz
+          tar -xzf kernel-build.tar.gz
+          rm kernel-*.tar.gz
+          echo "Extracted kernel artifacts:"
+          ls -la kernel-source/linux/ kernel-build/
 
       - name: Create output directory
         run: |
@@ -154,12 +192,13 @@ jobs:
       - name: Generate codebrowser HTML
         run: |
           docker run --rm \
-            -v $(pwd)/kernel-workspace:/mnt/input:ro \
+            -v $(pwd)/kernel-source:/mnt/source:ro \
+            -v $(pwd)/kernel-build:/mnt/build:ro \
             -v $(pwd)/codebrowser-output:/mnt/output \
             ${{ env.REGISTRY }}/${{ github.repository }}/codebrowser:latest \
             /mnt/scripts/generate-codebrowser.sh \
-              -i /mnt/input/linux \
-              -b /mnt/input/linux \
+              -i /mnt/source/linux \
+              -b /mnt/build \
               -o /mnt/output \
               -p "Linux Kernel ${{ needs.build-kernel.outputs.kernel-version }} (${{ needs.build-kernel.outputs.kernel-commit }})"
 
