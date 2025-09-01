@@ -76,12 +76,11 @@ jobs:
 
       - name: Create workspace directories
         run: |
-          mkdir -p kernel-source
-          mkdir -p kernel-build
+          mkdir -p kernel-workspace
 
       - name: Clone Linux kernel
         run: |
-          cd kernel-source
+          cd kernel-workspace
           git clone --depth 1 --branch ${{ steps.params.outputs.kernel_version }} ${{ env.KERNEL_REPO }} linux
           cd linux
           echo "Cloned Linux kernel ${{ steps.params.outputs.kernel_version }}"
@@ -90,7 +89,7 @@ jobs:
       - name: Get kernel information
         id: kernel-info
         run: |
-          cd kernel-source/linux
+          cd kernel-workspace/linux
           KERNEL_VERSION=$(make kernelversion)
           KERNEL_COMMIT=$(git rev-parse --short HEAD)
           echo "version=${KERNEL_VERSION}" >> $GITHUB_OUTPUT
@@ -101,29 +100,25 @@ jobs:
       - name: Build kernel with compile_commands.json
         run: |
           docker run --rm \
-            -v $(pwd)/kernel-source:/mnt/input:ro \
-            -v $(pwd)/kernel-build:/mnt/output \
+            -v $(pwd)/kernel-workspace:/mnt/workspace \
             ${{ env.REGISTRY }}/${{ github.repository }}/kernel-build:latest \
             /mnt/scripts/kernel-build.sh \
-              -s /mnt/input/linux \
-              -o /mnt/output \
+              -s /mnt/workspace/linux \
               -c ${{ steps.params.outputs.kernel_config }} \
               -a ${{ steps.params.outputs.arch }}
 
       - name: Verify build artifacts
         run: |
           echo "Build artifacts:"
-          ls -la kernel-build/
+          ls -la kernel-workspace/linux/
           echo "Compile commands file size:"
-          du -h kernel-build/compile_commands.json
+          du -h kernel-workspace/linux/compile_commands.json
 
       - name: Upload kernel artifacts
         uses: actions/upload-artifact@v4
         with:
           name: kernel-artifacts
-          path: |
-            kernel-source/
-            kernel-build/
+          path: kernel-workspace/
           retention-days: 1
 
   generate-codebrowser:
@@ -146,13 +141,12 @@ jobs:
       - name: Generate codebrowser HTML
         run: |
           docker run --rm \
-            -v $(pwd)/kernel-source:/mnt/input:ro \
-            -v $(pwd)/kernel-build:/mnt/build:ro \
+            -v $(pwd)/kernel-workspace:/mnt/input:ro \
             -v $(pwd)/codebrowser-output:/mnt/output \
             ${{ env.REGISTRY }}/${{ github.repository }}/codebrowser:latest \
             /mnt/scripts/generate-codebrowser.sh \
               -i /mnt/input/linux \
-              -b /mnt/build \
+              -b /mnt/input/linux \
               -o /mnt/output \
               -p "Linux Kernel ${{ needs.build-kernel.outputs.kernel-version }} (${{ needs.build-kernel.outputs.kernel-commit }})"
 
