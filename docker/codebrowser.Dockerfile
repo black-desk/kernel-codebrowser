@@ -42,6 +42,7 @@ RUN git clone https://github.com/KDAB/codebrowser.git && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local . && \
     make -j$(nproc) && \
     make install && \
+    cp -r data /usr/local/share/codebrowser-data && \
     cd .. && \
     rm -rf codebrowser
 
