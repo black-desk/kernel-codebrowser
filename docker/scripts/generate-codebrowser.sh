@@ -88,7 +88,7 @@ if [[ ! -f "$BUILD_DIR/compile_commands.json" ]]; then
 fi
 
 # Create output directory with project name and version subdirectory
-FINAL_OUTPUT_DIR="$OUTPUT_DIR/$PROJECT_NAME-$PROJECT_VERSION"
+FINAL_OUTPUT_DIR="$OUTPUT_DIR/$PROJECT_NAME:$PROJECT_VERSION"
 mkdir -p "$FINAL_OUTPUT_DIR"
 
 echo "Starting codebrowser generation..."
@@ -104,7 +104,6 @@ codebrowser_generator \
     -a \
     -o "$FINAL_OUTPUT_DIR" \
     -b "$BUILD_DIR" \
-    -d "./data" \
     -p "$PROJECT_NAME:$PROJECT_VERSION:$INPUT_DIR"
 
 # Generate index
