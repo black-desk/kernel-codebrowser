@@ -4,9 +4,9 @@ SPDX-FileCopyrightText: 2025 Chen Linxuan <me@black-desk.cn>
 SPDX-License-Identifier: MIT
 -->
 
-<!-- TODO: 更新项目名称 -->
+# Kernel Code Browser
 
-# 模版
+基于 KDAB 的 codebrowser 构建的 Linux 内核源代码在线浏览器
 
 [![checks][badge-shields-io-checks]][actions]
 [![commit activity][badge-shields-io-commit-activity]][commits]
@@ -15,74 +15,59 @@ SPDX-License-Identifier: MIT
 ![commits since release][badge-shields-io-commits-since-release]
 [![codecov][badge-shields-io-codecov]][codecov]
 
-<!-- TODO: 更新项目链接 -->
-
 [badge-shields-io-checks]:
-  https://img.shields.io/github/check-runs/black-desk/template/master
+  https://img.shields.io/github/check-runs/black-desk/kernel-codebrowser/master
 
-<!-- TODO: 更新项目链接 -->
-
-[actions]: https://github.com/black-desk/template/actions
-
-<!-- TODO: 更新项目链接 -->
+[actions]: https://github.com/black-desk/kernel-codebrowser/actions
 
 [badge-shields-io-commit-activity]:
-  https://img.shields.io/github/commit-activity/w/black-desk/template/master
+  https://img.shields.io/github/commit-activity/w/black-desk/kernel-codebrowser/master
 
-<!-- TODO: 更新项目链接 -->
-
-[commits]: https://github.com/black-desk/template/commits/master
-
-<!-- TODO: 更新项目链接 -->
+[commits]: https://github.com/black-desk/kernel-codebrowser/commits/master
 
 [badge-shields-io-contributors]:
-  https://img.shields.io/github/contributors/black-desk/template
+  https://img.shields.io/github/contributors/black-desk/kernel-codebrowser
 
-<!-- TODO: 更新项目链接 -->
-
-[contributors]: https://github.com/black-desk/template/graphs/contributors
-
-<!-- TODO: 更新项目链接 -->
+[contributors]: https://github.com/black-desk/kernel-codebrowser/graphs/contributors
 
 [badge-shields-io-release-date]:
-  https://img.shields.io/github/release-date/black-desk/template
+  https://img.shields.io/github/release-date/black-desk/kernel-codebrowser
 
-<!-- TODO: 更新项目链接 -->
-
-[releases]: https://github.com/black-desk/template/releases
-
-<!-- TODO: 更新项目链接 -->
+[releases]: https://github.com/black-desk/kernel-codebrowser/releases
 
 [badge-shields-io-commits-since-release]:
-  https://img.shields.io/github/commits-since/black-desk/template/latest
-
-<!-- TODO: 更新项目链接 -->
+  https://img.shields.io/github/commits-since/black-desk/kernel-codebrowser/latest
 
 [badge-shields-io-codecov]:
-  https://codecov.io/github/black-desk/template/graph/badge.svg?token=6TSVGQ4L9X
-[codecov]: https://codecov.io/github/black-desk/template
+  https://codecov.io/github/black-desk/kernel-codebrowser/graph/badge.svg?token=6TSVGQ4L9X
+[codecov]: https://codecov.io/github/black-desk/kernel-codebrowser
 
 [en](README.md) | zh_CN
 
-<!-- TODO: 添加项目简介 -->
+该项目提供一个基于 Web 的界面，用于浏览多个版本的 Linux 内核源代码。它使用 [KDAB 的 codebrowser](https://github.com/KDAB/codebrowser) 来生成可搜索和可导航的内核源代码 HTML 表示，使开发者和研究人员能够轻松地在线探索不同的内核版本。
 
 ## 使用
 
-<!-- TODO: 添加项目使用说明 -->
+## 开发环境搭建
 
-1. 使用gh，从模版创建仓库：
-
-   ```bash
-   gh repo create --public --template black-desk/template
-   ```
-
-2. 编辑项目文件，填充内容后移除所有的`TODO`。
-
-3. 运行检查脚本，确定所有`TODO`均已被移除：
+1. 克隆仓库：
 
    ```bash
-   ./scripts/ls-todo.sh
+   git clone https://github.com/black-desk/kernel-codebrowser.git
+   cd kernel-codebrowser
    ```
+
+2. 安装依赖（具体依赖项将随项目发展而添加）
+
+3. 配置要浏览的内核版本（配置详情待添加）
+
+4. 生成代码浏览器（构建过程待定义）
+
+5. 部署 Web 界面（部署说明待添加）
+
+## 项目状态
+
+⚠️ **该项目目前处于早期开发阶段**。实现细节、构建过程和部署说明将随着项目进展逐步添加。
 
 ## 许可证
 

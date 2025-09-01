@@ -4,9 +4,9 @@ SPDX-FileCopyrightText: 2025 Chen Linxuan <me@black-desk.cn>
 SPDX-License-Identifier: MIT
 -->
 
-<!-- TODO: Update project name -->
+# Kernel Code Browser
 
-# Template
+A web-based Linux kernel source code browser powered by KDAB's codebrowser
 
 [![checks][badge-shields-io-checks]][actions]
 [![commit activity][badge-shields-io-commit-activity]][commits]
@@ -15,52 +15,32 @@ SPDX-License-Identifier: MIT
 ![commits since release][badge-shields-io-commits-since-release]
 [![codecov][badge-shields-io-codecov]][codecov]
 
-<!-- TODO: Update project links -->
-
 [badge-shields-io-checks]:
-  https://img.shields.io/github/check-runs/black-desk/template/master
+  https://img.shields.io/github/check-runs/black-desk/kernel-codebrowser/master
 
-<!-- TODO: Update project links -->
-
-[actions]: https://github.com/black-desk/template/actions
-
-<!-- TODO: Update project links -->
+[actions]: https://github.com/black-desk/kernel-codebrowser/actions
 
 [badge-shields-io-commit-activity]:
-  https://img.shields.io/github/commit-activity/w/black-desk/template/master
+  https://img.shields.io/github/commit-activity/w/black-desk/kernel-codebrowser/master
 
-<!-- TODO: Update project links -->
-
-[commits]: https://github.com/black-desk/template/commits/master
-
-<!-- TODO: Update project links -->
+[commits]: https://github.com/black-desk/kernel-codebrowser/commits/master
 
 [badge-shields-io-contributors]:
-  https://img.shields.io/github/contributors/black-desk/template
+  https://img.shields.io/github/contributors/black-desk/kernel-codebrowser
 
-<!-- TODO: Update project links -->
-
-[contributors]: https://github.com/black-desk/template/graphs/contributors
-
-<!-- TODO: Update project links -->
+[contributors]: https://github.com/black-desk/kernel-codebrowser/graphs/contributors
 
 [badge-shields-io-release-date]:
-  https://img.shields.io/github/release-date/black-desk/template
+  https://img.shields.io/github/release-date/black-desk/kernel-codebrowser
 
-<!-- TODO: Update project links -->
-
-[releases]: https://github.com/black-desk/template/releases
-
-<!-- TODO: Update project links -->
+[releases]: https://github.com/black-desk/kernel-codebrowser/releases
 
 [badge-shields-io-commits-since-release]:
-  https://img.shields.io/github/commits-since/black-desk/template/latest
-
-<!-- TODO: Update project links -->
+  https://img.shields.io/github/commits-since/black-desk/kernel-codebrowser/latest
 
 [badge-shields-io-codecov]:
-  https://codecov.io/github/black-desk/template/graph/badge.svg?token=6TSVGQ4L9X
-[codecov]: https://codecov.io/github/black-desk/template
+  https://codecov.io/github/black-desk/kernel-codebrowser/graph/badge.svg?token=6TSVGQ4L9X
+[codecov]: https://codecov.io/github/black-desk/kernel-codebrowser
 
 en | [zh_CN](README.zh_CN.md)
 
@@ -69,27 +49,28 @@ en | [zh_CN](README.zh_CN.md)
 > This English README is translated from the Chinese version using LLM and may
 > contain errors.
 
-<!-- TODO: Add project description -->
+This project provides a web-based interface for browsing multiple versions of the Linux kernel source code. It uses [KDAB's codebrowser](https://github.com/KDAB/codebrowser) to generate searchable and navigable HTML representations of kernel source code, allowing developers and researchers to easily explore different kernel versions online.
 
-My personal project template
+## Development Setup
 
-## Usage
-
-<!-- TODO: Add project usage instructions -->
-
-1. Use gh to create a repository from the template:
+1. Clone the repository:
 
    ```bash
-   gh repo create --public --template black-desk/template
+   git clone https://github.com/black-desk/kernel-codebrowser.git
+   cd kernel-codebrowser
    ```
 
-2. Edit project files, fill in content, and remove all `TODO` comments.
+2. Install dependencies (specific dependencies will be added as the project develops)
 
-3. Run the check script to ensure all `TODO` comments have been removed:
+3. Configure kernel versions to browse (configuration details to be added)
 
-   ```bash
-   ./scripts/ls-todo.sh
-   ```
+4. Generate the code browser (build process to be defined)
+
+5. Deploy the web interface (deployment instructions to be added)
+
+## Project Status
+
+⚠️ **This project is currently in early development phase**. The implementation details, build processes, and deployment instructions will be added as the project progresses.
 
 ## License
 
