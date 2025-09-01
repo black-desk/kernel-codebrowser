@@ -150,7 +150,7 @@ jobs:
 
       - name: Compress kernel artifacts
         run: |
-          tar -czf kernel-source.tar.gz kernel-source/
+          tar -czf kernel-source.tar.gz --exclude='kernel-source/linux/.git' kernel-source/
           tar -czf kernel-build.tar.gz kernel-build/
           echo "Compressed artifacts:"
           ls -lh kernel-*.tar.gz
