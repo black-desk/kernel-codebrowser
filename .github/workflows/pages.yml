@@ -237,14 +237,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  cleanup:
-    needs: [build-kernel, generate-codebrowser]
-    runs-on: ubuntu-latest
-    if: always()
-
-    steps:
-      - name: Delete artifacts
-        uses: geekyeggo/delete-artifact@v4
-        with:
-          name: kernel-artifacts
