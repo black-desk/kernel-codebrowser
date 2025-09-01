@@ -11,12 +11,25 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
+    make \
     cmake \
     git \
     llvm-dev \
     libclang-dev \
     clang \
+    lld \
     libclang-cpp-dev \
+    bc \
+    bison \
+    flex \
+    libssl-dev \
+    libelf-dev \
+    libncurses5-dev \
+    libncursesw5-dev \
+    xz-utils \
+    kmod \
+    cpio \
+    python3-dev \
     curl \
     ca-certificates \
     && apt-get autoremove -y \
