@@ -149,12 +149,6 @@ jobs:
           echo "Compressed artifacts:"
           ls -lh kernel-*.tar.gz
 
-      - name: Compress kernel artifacts
-        run: |
-          tar -czf kernel-workspace.tar.gz kernel-workspace/
-          echo "Compressed kernel workspace:"
-          ls -lh kernel-workspace.tar.gz
-
       - name: Upload kernel artifacts
         uses: actions/upload-artifact@v4
         with:
