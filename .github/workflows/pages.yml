@@ -1,0 +1,187 @@
+# SPDX-FileCopyrightText: 2025 Chen Linxuan <me@black-desk.cn>
+# SPDX-License-Identifier: MIT
+
+name: "Build and Deploy Kernel Code Browser to GitHub Pages"
+
+on:
+  # Run on manual trigger
+  workflow_dispatch:
+    inputs:
+      kernel_version:
+        description: 'Linux kernel version/tag to build (e.g., v6.12, master)'
+        required: false
+        default: 'master'
+        type: string
+      kernel_config:
+        description: 'Kernel configuration to use'
+        required: false
+        default: 'defconfig'
+        type: choice
+        options:
+          - 'defconfig'
+          - 'allmodconfig'
+          - 'allyesconfig'
+      arch:
+        description: 'Target architecture'
+        required: false
+        default: 'x86_64'
+        type: choice
+        options:
+          - 'x86_64'
+          - 'arm64'
+          - 'arm'
+  # Run weekly on Sunday at 3:00 UTC to build latest master
+  schedule:
+    - cron: '0 3 * * 0'
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  KERNEL_REPO: https://github.com/torvalds/linux.git
+
+jobs:
+  build-kernel:
+    runs-on: ubuntu-latest
+    outputs:
+      kernel-version: ${{ steps.kernel-info.outputs.version }}
+      kernel-commit: ${{ steps.kernel-info.outputs.commit }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set build parameters
+        id: params
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "kernel_version=${{ inputs.kernel_version }}" >> $GITHUB_OUTPUT
+            echo "kernel_config=${{ inputs.kernel_config }}" >> $GITHUB_OUTPUT
+            echo "arch=${{ inputs.arch }}" >> $GITHUB_OUTPUT
+          else
+            echo "kernel_version=master" >> $GITHUB_OUTPUT
+            echo "kernel_config=defconfig" >> $GITHUB_OUTPUT
+            echo "arch=x86_64" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create workspace directories
+        run: |
+          mkdir -p kernel-source
+          mkdir -p kernel-build
+
+      - name: Clone Linux kernel
+        run: |
+          cd kernel-source
+          git clone --depth 1 --branch ${{ steps.params.outputs.kernel_version }} ${{ env.KERNEL_REPO }} linux
+          cd linux
+          echo "Cloned Linux kernel ${{ steps.params.outputs.kernel_version }}"
+          git log --oneline -1
+
+      - name: Get kernel information
+        id: kernel-info
+        run: |
+          cd kernel-source/linux
+          KERNEL_VERSION=$(make kernelversion)
+          KERNEL_COMMIT=$(git rev-parse --short HEAD)
+          echo "version=${KERNEL_VERSION}" >> $GITHUB_OUTPUT
+          echo "commit=${KERNEL_COMMIT}" >> $GITHUB_OUTPUT
+          echo "Kernel version: ${KERNEL_VERSION}"
+          echo "Kernel commit: ${KERNEL_COMMIT}"
+
+      - name: Build kernel with compile_commands.json
+        run: |
+          docker run --rm \
+            -v $(pwd)/kernel-source:/mnt/input:ro \
+            -v $(pwd)/kernel-build:/mnt/output \
+            ${{ env.REGISTRY }}/${{ github.repository }}/kernel-build:latest \
+            /mnt/scripts/kernel-build.sh \
+              -s /mnt/input/linux \
+              -o /mnt/output \
+              -c ${{ steps.params.outputs.kernel_config }} \
+              -a ${{ steps.params.outputs.arch }}
+
+      - name: Verify build artifacts
+        run: |
+          echo "Build artifacts:"
+          ls -la kernel-build/
+          echo "Compile commands file size:"
+          du -h kernel-build/compile_commands.json
+
+      - name: Upload kernel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-artifacts
+          path: |
+            kernel-source/
+            kernel-build/
+          retention-days: 1
+
+  generate-codebrowser:
+    needs: build-kernel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download kernel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: kernel-artifacts
+
+      - name: Create output directory
+        run: |
+          mkdir -p codebrowser-output
+
+      - name: Generate codebrowser HTML
+        run: |
+          docker run --rm \
+            -v $(pwd)/kernel-source:/mnt/input:ro \
+            -v $(pwd)/kernel-build:/mnt/build:ro \
+            -v $(pwd)/codebrowser-output:/mnt/output \
+            ${{ env.REGISTRY }}/${{ github.repository }}/codebrowser:latest \
+            /mnt/scripts/generate-codebrowser.sh \
+              -i /mnt/input/linux \
+              -b /mnt/build \
+              -o /mnt/output \
+              -p "Linux Kernel ${{ needs.build-kernel.outputs.kernel-version }} (${{ needs.build-kernel.outputs.kernel-commit }})"
+
+      - name: Verify codebrowser output
+        run: |
+          echo "Codebrowser output:"
+          ls -la codebrowser-output/
+          echo "Total size:"
+          du -sh codebrowser-output/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'codebrowser-output'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  cleanup:
+    needs: [build-kernel, generate-codebrowser]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Delete artifacts
+        uses: geekyeggo/delete-artifact@v4
+        with:
+          name: kernel-artifacts
