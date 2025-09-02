@@ -194,7 +194,7 @@ jobs:
           docker run --rm \
             -v $(pwd)/kernel-source:/mnt/source:ro \
             -v $(pwd)/kernel-build:/mnt/build:ro \
-            -v $(pwd)/codebrowser-output:/mnt/output/Linux \
+            -v $(pwd)/codebrowser-output:/mnt/output \
             ${{ env.REGISTRY }}/${{ github.repository }}/codebrowser:latest \
             /mnt/scripts/generate-codebrowser.sh \
               -i /mnt/source/linux \
