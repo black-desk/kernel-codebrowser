@@ -39,7 +39,7 @@ EOF
 }
 
 # Parse command line arguments
-while getopts "i:o:b:p:v:h" opt; do
+while getopts "i:o:b:p:v:d:h" opt; do
     case $opt in
         i) INPUT_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
