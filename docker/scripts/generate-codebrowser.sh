@@ -29,6 +29,7 @@ OPTIONS:
     -b DIR      Build directory containing compile_commands.json (required)
     -p NAME     Project name (required)
     -v VERSION  Project version (required)
+    -d URL      Data URL (required)
     -h          Show this help message
 
 EXAMPLE:
@@ -45,6 +46,7 @@ while getopts "i:o:b:p:v:h" opt; do
         b) BUILD_DIR="$OPTARG" ;;
         p) PROJECT_NAME="$OPTARG" ;;
         v) PROJECT_VERSION="$OPTARG" ;;
+        d) DATA_URL="$OPTARG" ;;
         h) show_help; exit 0 ;;
         *) echo "Invalid option. Use -h for help."; exit 1 ;;
     esac
@@ -76,6 +78,11 @@ if [[ -z "$PROJECT_VERSION" ]]; then
     exit 1
 fi
 
+if [[ -z "$DATA_URL" ]]; then
+    echo "Error: Data URL must be specified with -d option."
+    exit 1
+fi
+
 if [[ ! -d "$INPUT_DIR" ]]; then
     echo "Error: Input directory '$INPUT_DIR' does not exist."
     exit 1
@@ -93,18 +100,20 @@ echo "Output: $OUTPUT_DIR"
 echo "Build: $BUILD_DIR"
 echo "Project: $PROJECT_NAME"
 echo "Version: $PROJECT_VERSION"
+echo "Data URL: $DATA_URL"
 
 # Run codebrowser generator
 codebrowser_generator \
     -a \
     -o "$OUTPUT_DIR" \
     -b "$BUILD_DIR" \
-    -p "$PROJECT_NAME:$INPUT_DIR:$PROJECT_VERSION"
+    -p "$PROJECT_NAME:$INPUT_DIR:$PROJECT_VERSION" \
+    -d "$DATA_URL"
 
 # Generate index
 if command -v codebrowser_indexgenerator &> /dev/null; then
     echo "Generating index..."
-    codebrowser_indexgenerator "$OUTPUT_DIR" -p "$PROJECT_NAME:$INPUT_DIR:$PROJECT_VERSION" -d data
+    codebrowser_indexgenerator "$OUTPUT_DIR" -p "$PROJECT_NAME:$INPUT_DIR:$PROJECT_VERSION" -d "$DATA_URL"
 else
     echo "Warning: codebrowser_indexgenerator not found. Index will not be generated."
 fi
