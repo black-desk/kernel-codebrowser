@@ -44,6 +44,8 @@ SPDX-License-Identifier: MIT
 
 [en](README.md) | zh_CN
 
+[**codebrowser**](https://black-desk.github.io/kernel-codebrowser)
+
 该项目提供一个基于 Web 的界面，用于浏览多个版本的 Linux 内核源代码。它使用 [KDAB 的 codebrowser](https://github.com/KDAB/codebrowser) 来生成可搜索和可导航的内核源代码 HTML 表示，使开发者和研究人员能够轻松地在线探索不同的内核版本。
 
 ## 使用

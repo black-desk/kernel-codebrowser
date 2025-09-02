@@ -49,6 +49,8 @@ en | [zh_CN](README.zh_CN.md)
 > This English README is translated from the Chinese version using LLM and may
 > contain errors.
 
+[**codebrowser**](https://black-desk.github.io/kernel-codebrowser)
+
 This project provides a web-based interface for browsing multiple versions of the Linux kernel source code. It uses [KDAB's codebrowser](https://github.com/KDAB/codebrowser) to generate searchable and navigable HTML representations of kernel source code, allowing developers and researchers to easily explore different kernel versions online.
 
 ## Development Setup
